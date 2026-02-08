@@ -28,11 +28,11 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'yumee-secret-key-change
 # Enable CORS for all origins (needed for WebSocket connections)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Initialize SocketIO with eventlet for production (works with Gunicorn)
+# Initialize SocketIO with gevent for production (works with Gunicorn)
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
-    async_mode='eventlet',
+    async_mode='gevent',
     logger=False,
     engineio_logger=False,
     ping_timeout=60,
