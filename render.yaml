@@ -18,8 +18,8 @@ services:
     # Build command - installs dependencies
     buildCommand: "pip install -r requirements.txt"
     
-    # Start command - runs the server
-    startCommand: "gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:$PORT server:app"
+    # Start command - runs the server (using threading mode instead of eventlet)
+    startCommand: "gunicorn --worker-class gthread -w 1 --threads 4 --bind 0.0.0.0:$PORT --timeout 120 server:app"
     
     # Environment variables
     envVars:

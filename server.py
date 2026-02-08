@@ -28,7 +28,8 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'yumee-secret-key-change
 # Enable CORS for all origins (needed for WebSocket connections)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Initialize SocketIO with async_mode='threading' for Render compatibility
+# Initialize SocketIO with threading mode for better compatibility
+# threading mode works without eventlet/gevent and is stable on Render
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
@@ -36,7 +37,8 @@ socketio = SocketIO(
     logger=False,
     engineio_logger=False,
     ping_timeout=60,
-    ping_interval=25
+    ping_interval=25,
+    manage_session=False
 )
 
 # Store connected users: {socket_id: {"name": display_name, "sid": socket_id}}
@@ -448,13 +450,12 @@ if __name__ == '__main__':
     logger.info(f"Starting Yumee Signaling Server on port {port}")
     logger.info(f"WebSocket endpoint: ws://localhost:{port}/socket.io/")
     
-    # Run the server
-    # Use threaded=True for handling multiple connections
+    # Run the server locally (for development/testing)
+    # On Render, gunicorn handles this
     socketio.run(
         app,
         host='0.0.0.0',
         port=port,
         debug=False,
-        use_reloader=False,
-        threaded=True
+        use_reloader=False
     )
