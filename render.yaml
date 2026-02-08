@@ -1,37 +1,12 @@
-# Render.com Configuration for Yumee Signaling Server
-# ====================================================
-# This file tells Render how to build and deploy your server.
-# 
-# DEPLOYMENT INSTRUCTIONS:
-# 1. Push this code to a GitHub repository
-# 2. Go to https://dashboard.render.com/
-# 3. Click "New +" → "Web Service"
-# 4. Connect your GitHub repository
-# 5. Render will read this file and configure everything automatically
-
 services:
   - type: web
     name: yumee-server
     runtime: python
     plan: free
-    
-    # Build command - installs dependencies
-    buildCommand: "pip install -r requirements.txt"
-    
-    # Start command - runs the server (using threading mode instead of eventlet)
-    startCommand: "gunicorn --worker-class gthread -w 1 --threads 4 --bind 0.0.0.0:$PORT --timeout 120 server:app"
-    
-    # Environment variables
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:$PORT --timeout 120 app:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
       - key: SECRET_KEY
-        generateValue: true  # Render will generate a random secret key
-      - key: PORT
-        value: 10000  # Render will override this with their port
-    
-    # Health check path
-    healthCheckPath: /health
-    
-    # Auto-deploy on git push
-    autoDeploy: true
+        generateValue: true
