@@ -8,7 +8,7 @@ Hosted on Render.com - always online for your friends to connect.
 """
 
 from flask import Flask, request
-from flask_socketio import SocketIO, emit, join_room, leave_room, disconnect
+from flask_socketio import SocketIO, emit, join_room, leave_room
 from flask_cors import CORS
 import os
 import logging
@@ -28,12 +28,11 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'yumee-secret-key-change
 # Enable CORS for all origins (needed for WebSocket connections)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Initialize SocketIO with threading mode for better compatibility
-# threading mode works without eventlet/gevent and is stable on Render
+# Initialize SocketIO with eventlet for production (works with Gunicorn)
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
-    async_mode='threading',
+    async_mode='eventlet',
     logger=False,
     engineio_logger=False,
     ping_timeout=60,
